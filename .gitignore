@@ -4,3 +4,5 @@ builddir
 
 pn532-nfc-hat-code.7z
 .demo
+*.o
+*.exe
