@@ -58,8 +58,10 @@ void close_spi(void) {
 }
 
 int send_spi(const uint8_t *sendBuf, uint8_t sendSize) {
+    static uint8_t rxBuf[1024] = {0};
     struct spi_ioc_transfer tx = {
         .tx_buf = (unsigned long)sendBuf,
+        .rx_buf = (unsigned long)rxBuf,
         .len = sendSize
     };
 
@@ -69,15 +71,17 @@ int send_spi(const uint8_t *sendBuf, uint8_t sendSize) {
             log_err ("Send to SPI error: %m");
             return -1;
         }
-        log_trc ("Sent: %s", Pn532::PrintHex(sendBuf, sendSize));
+        log_trc ("Sent: %s [got: %s]"
+            , Pn532::PrintHex(sendBuf, sendSize)
+            , Pn532::PrintHex(rxBuf, sendSize));
         return 0;
     }
     return -1;
 }
 
 int read_spi(uint8_t *recBuf, uint8_t recSize, uint8_t sendByte) {
+    static char txBuf[1024] = {0};
     int ret = -1;
-    char txBuf[1024] = {0};
     memset(txBuf, sendByte, recSize);
     struct spi_ioc_transfer tx = {
         .tx_buf = (unsigned long)txBuf,
