@@ -64,7 +64,7 @@ int send_spi(const uint8_t *sendBuf, uint8_t sendSize) {
 
     if (spiFd > 0) {
         int r = ioctl(spiFd, SPI_IOC_MESSAGE(1), &tx);
-        if (r == 1) {
+        if (r < 0) {
             log_err ("Send to SPI error: %m");
             return -1;
         }
@@ -85,8 +85,8 @@ int read_spi(uint8_t *recBuf, uint8_t recSize, uint8_t sendByte) {
 
     if (spiFd > 0) {
         int r = ioctl(spiFd, SPI_IOC_MESSAGE(1), &tx);
-        if (r == 1) {
-            log_err ("Send to SPI error: %m");
+        if (r < 0) {
+            log_err ("Read(+send) from SPI error: %m");
         } else {
             ret = 0;
         }
