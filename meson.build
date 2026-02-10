@@ -15,14 +15,16 @@ configure_file(
 )
 
 # Includes
-# inc = include_directories([
-#     'include',
-#     'lib'
-# ])
+inc = include_directories([
+      'src'
+    , 'lib'
+])
 
 # Sources
 src = [
-    'main.cpp'
+      'lib/Pn532.cpp'
+    , 'src/board_spi.cpp'
+    , 'src/main.cpp'
 ]
 
 # Dependencies
@@ -34,5 +36,6 @@ deps = [
 executable(
       prjName
     , src
-    , dependencies : deps
+    , include_directories : inc
+    , dependencies        : deps
 )
