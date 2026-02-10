@@ -3,6 +3,7 @@
 
 int open_spi(void);
 void close_spi(void);
+int read_spi(uint8_t *recBuf, uint8_t recSize, uint8_t sendByte);
 int send_spi(const uint8_t *sendBuf, uint8_t sendSize);
 bool write_then_read(const uint8_t *write_buffer, size_t write_len, uint8_t *read_buffer, size_t read_len, uint8_t sendvalue = 0xFF);
 

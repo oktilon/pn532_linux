@@ -1303,7 +1303,8 @@ bool Pn532::isready() {
     // SPI ready check via Status Request
     uint8_t cmd = PN532_SPI_STATREAD;
     uint8_t reply;
-    write_then_read(&cmd, 1, &reply, 1);
+    // write_then_read(&cmd, 1, &reply, 1);
+    read_spi (&reply, 1, cmd);
     return reply == PN532_SPI_READY;
 }
 
