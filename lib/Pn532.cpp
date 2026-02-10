@@ -1510,18 +1510,16 @@ void Pn532::writecommand(uint8_t* cmd, uint8_t cmdlen) {
 }
 
 void Pn532::PrintHex(const char* caption, const byte* data, const uint32_t numBytes) {
-    char* buf = (char*)calloc(2, numBytes + 1);
+    char buf[1024] = {0};
     for (uint32_t i = 0; i < numBytes; i++) {
         sprintf(buf + i * 3, "%02X ", data[i] & 0xFF);
     }
     log_dbg("%s: %s", caption, buf);
-
-    free(buf);
 }
 
 void Pn532::PrintHexChar(const char* caption, const byte* data, const uint32_t numBytes) {
-    char* buf = (char*)calloc(2, numBytes + 1);
-    char* str = (char*)calloc(1, numBytes + 1);
+    char buf[1024] = {0};
+    char str[512] = {0};
     for (uint32_t i = 0; i < numBytes; i++) {
         sprintf(buf + i * 3, "%02X ", data[i] & 0xFF);
         sprintf(str + i, "%c", data[i] <= 0x1F ? '.' : (char)data[i]);
