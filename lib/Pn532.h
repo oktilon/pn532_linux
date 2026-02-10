@@ -143,7 +143,7 @@ typedef uint8_t byte;
 #define PN532_GPIO_P34 (4)              ///< GPIO 34
 #define PN532_GPIO_P35 (5)              ///< GPIO 35
 
-#define delay   usleep
+#define delay(MS)   usleep(MS*1000)
 
 /**
  * @brief Class for working with Adafruit PN532 NFC/RFID breakout boards.
