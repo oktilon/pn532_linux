@@ -201,8 +201,8 @@ public:
                                uint8_t dataLen);
 
   // Help functions to display formatted text
-  static void PrintHex(const char *caption, const byte *data, const uint32_t numBytes);
-  static void PrintHexChar(const char *caption, const byte *pbtData, const uint32_t numBytes);
+  static const char * PrintHex(const byte *data, const uint32_t numBytes);
+  static const char * PrintHexChar(const byte *pbtData, const uint32_t numBytes);
 
 private:
   int8_t _irq = -1, _reset = -1, _cs = -1;

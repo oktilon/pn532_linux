@@ -223,7 +223,7 @@ bool Pn532::writeGPIO(uint8_t pinstate) {
     readdata(pn532_packetbuffer, 8);
 
 #ifdef PN532DEBUG
-    PrintHex("Received", pn532_packetbuffer, 8);
+    log_dbg("Received %s", PrintHex(pn532_packetbuffer, 8));
 #endif
 
     int offset = 6;
@@ -268,7 +268,7 @@ uint8_t Pn532::readGPIO(void) {
     int p3offset = 7;
 
 #ifdef PN532DEBUG
-    PrintHex("Received", pn532_packetbuffer, 11);
+    log_dbg("Received: %s", PrintHex(pn532_packetbuffer, 11));
     log_dbg("P3 GPIO: 0x%02hhX", pn532_packetbuffer[p3offset]);
     log_dbg("P7 GPIO: 0x%02hhX", pn532_packetbuffer[p3offset + 1]);
     log_dbg("IO GPIO: 0x%02hhX", pn532_packetbuffer[p3offset + 2]);
@@ -433,7 +433,7 @@ bool Pn532::readDetectedPassiveTargetID(uint8_t* uid,
     /* Card appears to be Mifare Classic */
     *uidLength = pn532_packetbuffer[12];
 #ifdef MIFAREDEBUG
-    Pn532::PrintHex("UID", pn532_packetbuffer + 13, pn532_packetbuffer[12]);
+    log_dbg ("UID: %s", Pn532::PrintHex(pn532_packetbuffer + 13, pn532_packetbuffer[12]));
 #endif
     for (uint8_t i = 0; i < pn532_packetbuffer[12]; i++) {
         uid[i] = pn532_packetbuffer[13 + i];
@@ -661,12 +661,8 @@ uint8_t Pn532::mifareclassic_AuthenticateBlock(uint8_t* uid,
     _uidLen = uidLen;
 
 #ifdef MIFAREDEBUG
-    Pn532::PrintHex("Trying to authenticate card", _uid, _uidLen);
-    if (keyNumber) {
-        Pn532::PrintHex("Using authentication KEY B", _key, 6);
-    } else {
-        Pn532::PrintHex("Using authentication KEY A", _key, 6);
-    }
+    log_dbg ("Trying to authenticate card: %s", PrintHex(_uid, _uidLen));
+    log_dbg ("Using authentication KEY %c: %s", keyNumber ? 'B' : 'A', Pn532::PrintHex(_key, 6));
 #endif
 
     // Prepare the authentication command //
@@ -693,7 +689,7 @@ uint8_t Pn532::mifareclassic_AuthenticateBlock(uint8_t* uid,
     // is not good
     if (pn532_packetbuffer[7] != 0x00) {
 #ifdef PN532DEBUG
-        Pn532::PrintHexChar("Authentification failed", pn532_packetbuffer, 12);
+        log_dbg("Authentification failed: %s", Pn532::PrintHexChar(pn532_packetbuffer, 12));
 #endif
         return 0;
     }
@@ -741,7 +737,7 @@ uint8_t Pn532::mifareclassic_ReadDataBlock(uint8_t blockNumber,
     /* If byte 8 isn't 0x00 we probably have an error */
     if (pn532_packetbuffer[7] != 0x00) {
 #ifdef MIFAREDEBUG
-        Pn532::PrintHexChar("Unexpected response", pn532_packetbuffer, 26);
+        log_dbg("Unexpected response: %s", Pn532::PrintHexChar(pn532_packetbuffer, 26));
 #endif
         return 0;
     }
@@ -752,9 +748,7 @@ uint8_t Pn532::mifareclassic_ReadDataBlock(uint8_t blockNumber,
 
 /* Display data for debug if requested */
 #ifdef MIFAREDEBUG
-    char cap[10] = {0};
-    sprintf(cap, "Block %hhu", blockNumber);
-    Pn532::PrintHexChar(cap, data, 16);
+    log_dbg("Block %hhu: %s", blockNumber, Pn532::PrintHexChar(data, 16));
 #endif
 
     return 1;
@@ -972,7 +966,7 @@ uint8_t Pn532::mifareultralight_ReadPage(uint8_t page,
     /* Read the response packet */
     readdata(pn532_packetbuffer, 26);
 #ifdef MIFAREDEBUG
-    Pn532::PrintHexChar("Received", pn532_packetbuffer, 26);
+    log_dbg ("Received: %s", Pn532::PrintHexChar(pn532_packetbuffer, 26));
 #endif
 
     /* If byte 8 isn't 0x00 we probably have an error */
@@ -985,7 +979,7 @@ uint8_t Pn532::mifareultralight_ReadPage(uint8_t page,
         memcpy(buffer, pn532_packetbuffer + 8, 4);
     } else {
 #ifdef MIFAREDEBUG
-        Pn532::PrintHexChar("Unexpected response reading block", pn532_packetbuffer, 26);
+        log_dbg ("Unexpected response reading block: %s", Pn532::PrintHexChar(pn532_packetbuffer, 26));
 #endif
         return 0;
     }
@@ -993,8 +987,7 @@ uint8_t Pn532::mifareultralight_ReadPage(uint8_t page,
 /* Display data for debug if requested */
 #ifdef MIFAREDEBUG
     char cap[10] = {0};
-    sprintf(cap, "Page %hhu", page);
-    Pn532::PrintHexChar(cap, buffer, 4);
+    log_dbg ("Page %hhu: %s", page, Pn532::PrintHexChar(buffer, 4));
 #endif
 
     // Return OK signal
@@ -1101,7 +1094,7 @@ uint8_t Pn532::ntag2xx_ReadPage(uint8_t page, uint8_t* buffer) {
     /* Read the response packet */
     readdata(pn532_packetbuffer, 26);
 #ifdef MIFAREDEBUG
-    Pn532::PrintHexChar("Received", pn532_packetbuffer, 26);
+    log_dbg("Received: %s", Pn532::PrintHexChar(pn532_packetbuffer, 26));
 #endif
 
     /* If byte 8 isn't 0x00 we probably have an error */
@@ -1114,16 +1107,14 @@ uint8_t Pn532::ntag2xx_ReadPage(uint8_t page, uint8_t* buffer) {
         memcpy(buffer, pn532_packetbuffer + 8, 4);
     } else {
 #ifdef MIFAREDEBUG
-        Pn532::PrintHexChar("Unexpected response reading block", pn532_packetbuffer, 26);
+        log_dbg ("Unexpected response reading block: %s", Pn532::PrintHexChar(pn532_packetbuffer, 26));
 #endif
         return 0;
     }
 
 /* Display data for debug if requested */
 #ifdef MIFAREDEBUG
-    char cap[10] = {0};
-    sprintf ("Page %hhu", page);
-    Pn532::PrintHexChar(cap, buffer, 4);
+    log_dbg ("Page %hhu: %s", page, Pn532::PrintHexChar(buffer, 4));
 #endif
 
     // Return OK signal
@@ -1353,7 +1344,7 @@ void Pn532::readdata(uint8_t* buff, uint8_t n) {
     uint8_t cmd = PN532_SPI_DATAREAD;
     write_then_read(&cmd, 1, buff, n);
 #ifdef PN532DEBUG
-    Pn532::PrintHex("Reading", buff, n);
+    log_dbg ("Reading: %s", Pn532::PrintHex(buff, n));
 #endif
 }
 
@@ -1503,26 +1494,30 @@ void Pn532::writecommand(uint8_t* cmd, uint8_t cmdlen) {
     p++;
 
 #ifdef PN532DEBUG
-    PrintHex("Sending", packet, 8 + cmdlen);
+    log_dbg ("Sending: %s", PrintHex(packet, 8 + cmdlen));
 #endif
 
     send_spi(packet, 8 + cmdlen);
 }
 
-void Pn532::PrintHex(const char* caption, const byte* data, const uint32_t numBytes) {
-    char buf[1024] = {0};
+const char * Pn532::PrintHex(const byte* data, const uint32_t numBytes) {
+    static char buf[1024];
+    memset(buf, 0, 1024);
     for (uint32_t i = 0; i < numBytes; i++) {
         sprintf(buf + i * 3, "%02X ", data[i] & 0xFF);
     }
-    log_dbg("%s: %s", caption, buf);
+    return buf;
 }
 
-void Pn532::PrintHexChar(const char* caption, const byte* data, const uint32_t numBytes) {
-    char buf[1024] = {0};
+const char * Pn532::PrintHexChar(const byte* data, const uint32_t numBytes) {
+    static char buf[2048];
+    char dmp[1024] = {0};
     char str[512] = {0};
+    memset(buf, 0, 1024);
     for (uint32_t i = 0; i < numBytes; i++) {
-        sprintf(buf + i * 3, "%02X ", data[i] & 0xFF);
+        sprintf(dmp + i * 3, "%02X ", data[i] & 0xFF);
         sprintf(str + i, "%c", data[i] <= 0x1F ? '.' : (char)data[i]);
     }
-    log_dbg("%s: %s  %s", caption, buf, str);
+    sprintf(buf, "%s  %s", dmp, str);
+    return buf;
 }

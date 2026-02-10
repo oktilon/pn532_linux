@@ -7,6 +7,7 @@
 #include <sys/ioctl.h>
 #include <linux/spi/spidev.h>
 
+#include "Pn532.h"
 #include "board_spi.h"
 #include "main.h"
 
@@ -68,6 +69,7 @@ int send_spi(const uint8_t *sendBuf, uint8_t sendSize) {
             log_err ("Send to SPI error: %m");
             return -1;
         }
+        log_trc ("Sent: %s", Pn532::PrintHex(sendBuf, sendSize));
         return 0;
     }
     return -1;
@@ -88,6 +90,7 @@ int read_spi(uint8_t *recBuf, uint8_t recSize, uint8_t sendByte) {
         if (r < 0) {
             log_err ("Read(+send) from SPI error: %m");
         } else {
+            log_trc ("Got: %s", Pn532::PrintHex(recBuf, recSize));
             ret = 0;
         }
     }

@@ -29,18 +29,19 @@ const char *logLevelColor[] = {
 
 
 void logger (const char *file, int line, const char *func, int lvl, const char* fmt, ...) {
-    int r;
     char *msg = NULL;
     int logIx = lvl < 0 ? 0 : (lvl > LOG_LEVEL_MAX ? LOG_LEVEL_MAX : lvl);
 
     // Format log message
     va_list arglist;
     va_start (arglist, fmt);
-    r = vasprintf (&msg, fmt, arglist);
+    int r = vasprintf (&msg, fmt, arglist);
     va_end (arglist);
 
-    printf("[%s] %s%s\033[0m [%s:%d] in %s\n", logLevelHeaders[logIx], logLevelColor[lvl], msg, file, line, func);
-    fflush(stdout);
+    if (r) {
+        printf("[%s] %s%s\033[0m [%s:%d] in %s\n", logLevelHeaders[logIx], logLevelColor[lvl], msg, file, line, func);
+        fflush(stdout);
+    }
 }
 
 int main(int argc, char **argv) {
@@ -77,8 +78,7 @@ int main(int argc, char **argv) {
 
         if (success) {
             log_inf ("Found a card!");
-            log_inf ("UID Length: %hhu bytes", uidLength);
-            Pn532::PrintHex("UID Value", uid, uidLength);
+            log_inf ("UID Length: %hhu bytes, value: %s", uidLength, Pn532::PrintHex(uid, uidLength));
             // Wait 1 second before continuing
 
             if (uidLength == 4) {
@@ -120,9 +120,7 @@ int main(int argc, char **argv) {
                         // Dump the data into the 'data' array
                         success = nfc.mifareclassic_ReadDataBlock(currentblock, data);
                         if (success) {
-                            char blk[10] = {0};
-                            sprintf(blk, "Block %hhu", currentblock);
-                            Pn532::PrintHex(blk, data, 16);
+                            log_inf ("Block %hhu: %s", currentblock, Pn532::PrintHexChar(data, 16));
                         } else {
                             // Oops ... something happened
                             log_wrn("Block %hhu unable to read this block", currentblock);
