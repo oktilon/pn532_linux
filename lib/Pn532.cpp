@@ -1335,7 +1335,7 @@ bool Pn532::waitready(uint16_t timeout) {
                 return false;
             }
         }
-        delay(10);
+        delay(100);
     }
     return true;
 }
