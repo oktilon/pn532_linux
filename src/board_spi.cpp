@@ -71,9 +71,11 @@ int send_spi(const uint8_t *sendBuf, uint8_t sendSize) {
             log_err ("Send to SPI error: %m");
             return -1;
         }
+        const char *tmp = strdup(Pn532::PrintHex(sendBuf, sendSize));
         log_trc ("Sent: %s [got: %s]"
-            , Pn532::PrintHex(sendBuf, sendSize)
+            , tmp
             , Pn532::PrintHex(rxBuf, sendSize));
+        free(tmp);
         return 0;
     }
     return -1;
