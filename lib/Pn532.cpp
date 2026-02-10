@@ -1525,7 +1525,4 @@ void Pn532::PrintHexChar(const char* caption, const byte* data, const uint32_t n
         sprintf(str + i, "%c", data[i] <= 0x1F ? '.' : (char)data[i]);
     }
     log_dbg("%s: %s  %s", caption, buf, str);
-
-    free(buf);
-    free(str);
 }
