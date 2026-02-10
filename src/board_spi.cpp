@@ -75,6 +75,7 @@ int send_spi(const uint8_t *sendBuf, uint8_t sendSize) {
 
 int read_spi(uint8_t *recBuf, uint8_t recSize, uint8_t sendByte) {
     int ret = -1;
+    log_dbg ("malloc %hhu bytes", recSize);
     void *txBuf = malloc(recSize);
     memset(txBuf, sendByte, recSize);
     struct spi_ioc_transfer tx = {
